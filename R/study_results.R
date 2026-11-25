@@ -121,13 +121,13 @@ apply_study_results <- function(lRaw, results = TRUE) {
     is_active <- active[who]
     is_enrolled <- enrolled[who]
     liver <- .results_unif(s, salt = 31)
-    liver_size <- 2.5 + 5.5 * .results_unif(s, salt = 32)
+    liver_size <- 5 + 20 * .results_unif(s, salt = 32)
     liver_peak <- 30 + 60 * .results_unif(s, salt = 33)
     chronic <- .results_unif(s, salt = 34)
-    chronic_size <- 1.6 + 1.6 * .results_unif(s, salt = 35)
+    chronic_size <- 2.5 + 2.5 * .results_unif(s, salt = 35)
     kidney <- .results_unif(s, salt = 36)
     kidney_size <- 1.5 + 1.0 * .results_unif(s, salt = 37)
-    rise <- bump(days, liver_peak, 25)
+    rise <- bump(days, liver_peak, 35)
     stays <- ifelse(is.na(days) | days <= 0, 0, 1 - exp(-days / 30))
 
     transaminase <- range$kind %in% c("alt", "ast")
@@ -136,13 +136,13 @@ apply_study_results <- function(lRaw, results = TRUE) {
     from_start <- transaminase & is_enrolled & chronic < 0.12
     factor[from_start] <- chronic_size[from_start]
     # A rise after the first dose on an arm that is not placebo; a small one, rarely, on placebo.
-    drug <- transaminase & is_active & liver < 0.10
+    drug <- transaminase & is_active & liver < 0.12
     factor[drug] <- factor[drug] * (1 + (liver_size[drug] - 1) * rise[drug])
     mild <- transaminase & is_enrolled & !is_active & liver < 0.03
     factor[mild] <- factor[mild] * (1 + 1.2 * rise[mild])
-    bili <- range$kind == "tb" & is_active & liver < 0.03
-    factor[bili] <- 1 + (liver_size[bili] / 2) * rise[bili]
-    alp <- range$kind == "alp" & is_active & liver < 0.03
+    bili <- range$kind == "tb" & is_active & liver < 0.04
+    factor[bili] <- 1 + (3 + liver_size[bili] / 3) * rise[bili]
+    alp <- range$kind == "alp" & is_active & liver < 0.04
     factor[alp] <- 1 + 0.4 * rise[alp]
     creat <- range$kind == "creat" & is_active & kidney < 0.06
     factor[creat] <- 1 + (kidney_size[creat] - 1) * stays[creat]
