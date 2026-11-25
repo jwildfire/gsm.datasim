@@ -175,7 +175,7 @@ apply_study_results <- function(lRaw, results = TRUE) {
     one <- function(measure, value, unit) {
       data.frame(
         studyid = study, subjid = as.character(visit$subjid), visnam = name,
-        eg_dt = visit$visit_dt, egtstnam = measure, egresn = round(value), egresu = unit,
+        eg_dt = as_date(visit$visit_dt), egtstnam = measure, egresn = round(value), egresu = unit,
         stringsAsFactors = FALSE
       )
     }
