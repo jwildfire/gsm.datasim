@@ -140,9 +140,9 @@ apply_study_results <- function(lRaw, results = TRUE) {
     factor[drug] <- factor[drug] * (1 + (liver_size[drug] - 1) * rise[drug])
     mild <- transaminase & is_enrolled & !is_active & liver < 0.03
     factor[mild] <- factor[mild] * (1 + 1.2 * rise[mild])
-    bili <- range$kind == "tb" & is_active & liver < 0.04
+    bili <- range$kind == "tb" & is_active & liver < 0.06
     factor[bili] <- 1 + (3 + liver_size[bili] / 3) * rise[bili]
-    alp <- range$kind == "alp" & is_active & liver < 0.04
+    alp <- range$kind == "alp" & is_active & liver < 0.06
     factor[alp] <- 1 + 0.4 * rise[alp]
     creat <- range$kind == "creat" & is_active & kidney < 0.06
     factor[creat] <- 1 + (kidney_size[creat] - 1) * stays[creat]
