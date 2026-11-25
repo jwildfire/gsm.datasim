@@ -1,4 +1,4 @@
-# gsm.datasim (staging: study design)
+# gsm.datasim (staging: study design and study results)
 
 Staged on a branch from v2.1.0 in a copy of the repository, for study.builder to run in the browser. Not yet raised with gsm.datasim's maintainers. The `dev` branch has moved on from v2.1.0, so this needs porting before it can be proposed there.
 
@@ -6,8 +6,11 @@ Staged on a branch from v2.1.0 in a copy of the repository, for study.builder to
 
 - A study can follow a **design**: a schedule of activities in place of the fixed list of eight visits. `create_longitudinal_study()` takes a `design` argument, a plain list of planned visits, each with a name, a study day, a window, whether vital signs are taken, and the lab panels drawn. Visits, labs and vital signs follow it in every snapshot. See `validate_study_design()` for the format and `apply_study_design()` for what is done.
 - A participant's visit is the same in every snapshot that holds it: where a visit falls in its window, and which of the participant's values is drawn at it, depend on the participant and the visit, never on the random number stream.
+- A study can have **results**: `create_longitudinal_study()` takes a `results` argument. Each enrolled participant has a treatment arm (`Raw_SUBJ$arm`), each lab a result, unit and normal range (`lbresn`, `lbresu`, `lbnrlo`, `lbnrhi`), and there is an ECG table (`Raw_EG`: QTcF, QTcB and heart rate at every visit). A few participants on an arm that is not placebo have a rise in ALT and AST, in bilirubin or in creatinine after the first dose, and QTc is a little longer. See `apply_study_results()`.
 
 ## Known limits
+
+- A lab's toxicity grade is not worked out from the result beside it, and adverse events do not follow the arm.
 
 - Adverse events, protocol deviations and the other domains keep the simulator's own timeline.
 - Values are the participant's own, drawn again at the designed visits; they do not trend from visit to visit.
