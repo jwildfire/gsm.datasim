@@ -1,3 +1,18 @@
+# gsm.datasim (staging: study design)
+
+Staged on a branch from v2.1.0 in a copy of the repository, for study.builder to run in the browser. Not yet raised with gsm.datasim's maintainers. The `dev` branch has moved on from v2.1.0, so this needs porting before it can be proposed there.
+
+## New Features
+
+- A study can follow a **design**: a schedule of activities in place of the fixed list of eight visits. `create_longitudinal_study()` takes a `design` argument, a plain list of planned visits, each with a name, a study day, a window, whether vital signs are taken, and the lab panels drawn. Visits, labs and vital signs follow it in every snapshot. See `validate_study_design()` for the format and `apply_study_design()` for what is done.
+- A participant's visit is the same in every snapshot that holds it: where a visit falls in its window, and which of the participant's values is drawn at it, depend on the participant and the visit, never on the random number stream.
+
+## Known limits
+
+- Adverse events, protocol deviations and the other domains keep the simulator's own timeline.
+- Values are the participant's own, drawn again at the designed visits; they do not trend from visit to visit.
+- The man pages were not regenerated and the testthat suite was not run: this was written on a machine with no desktop R, and tested by running the package's source in webR.
+
 # gsm.datasim v2.1.0
 
 This minor release adds simulated data for the IP Compliance (IP non-starters and premature treatment discontinuation) and Repeat Measurements analytics, and keeps longitudinal snapshots consistent from one snapshot to the next.
