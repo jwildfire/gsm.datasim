@@ -7,6 +7,11 @@ Staged on a branch from v2.1.0 in a copy of the repository, for study.builder to
 - A study can follow a **design**: a schedule of activities in place of the fixed list of eight visits. `create_longitudinal_study()` takes a `design` argument, a plain list of planned visits, each with a name, a study day, a window, whether vital signs are taken, and the lab panels drawn. Visits, labs and vital signs follow it in every snapshot. See `validate_study_design()` for the format and `apply_study_design()` for what is done.
 - A participant's visit is the same in every snapshot that holds it: where a visit falls in its window, and which of the participant's values is drawn at it, depend on the participant and the visit, never on the random number stream.
 - A study can have **results**: `create_longitudinal_study()` takes a `results` argument. Each enrolled participant has a treatment arm (`Raw_SUBJ$arm`), each lab a result, unit and normal range (`lbresn`, `lbresu`, `lbnrlo`, `lbnrhi`), and there is an ECG table (`Raw_EG`: QTcF, QTcB and heart rate at every visit). A few participants on an arm that is not placebo have a rise in ALT and AST, in bilirubin or in creatinine after the first dose, and QTc is a little longer. See `apply_study_results()`.
+- A caller can ask for what it would otherwise change afterwards. `create_longitudinal_study()` takes four more arguments, each of which leaves the simulator as it was when not given:
+  - `specs`: table specs for domains the installed `gsm.mapping` has no mapping workflow for, as `list(Raw_VS = <spec>)`. Such a domain is made like any other, in every snapshot, after the rest and on a random stream of its own, so asking for it changes no other table. Vital signs made this way are the same in every snapshot that holds them.
+  - `column_names = "gsm"`: each column under gsm's name for it where the simulator would use the source's (`source_col`). `apply_gsm_names()` does it for one snapshot and keeps what each column was called (`attr(table, "renamed")`).
+  - `site_id_prefix`: `"SITE"`, say, in place of `"0X"`. An id such as `0X1234` is read back from a CSV file as a hexadecimal number.
+  - `phase` and `therapeutic_area`: what the study table says of each. Labels only; the random draw is still made, so nothing else moves.
 
 ## Known limits
 
