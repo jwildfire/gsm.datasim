@@ -66,8 +66,11 @@
 #' not serious a grade of 3 or less, so the two agree. A participant with a
 #' simulated rise in liver tests, in creatinine, or a long QTc usually has an
 #' event that says so ("Alanine aminotransferase increased", "Blood creatinine
-#' increased", "Electrocardiogram QT prolonged"), added on the day the rise is
-#' seen. `results$events = FALSE` leaves the adverse events as they were.
+#' increased", "Electrocardiogram QT prolonged"): their first event that
+#' starts once the rise is under way is given that term, when they have one.
+#' No event is added, removed or moved, so the number of events a participant
+#' or a site has is as the simulator made it. `results$events = FALSE` leaves
+#' the adverse events as they were.
 #'
 #' @section Dropout:
 #' `results$dropout` makes participants leave early: a list with `rate`, the
@@ -87,7 +90,7 @@
 #' A lab's toxicity grade (`toxgrg_nsv`) is the simulator's own and is not
 #' worked out from the result beside it. An adverse event's term does not
 #' depend on its grade or its dates, and the number of events a participant has
-#' does not depend on the arm, apart from the events added for a rise.
+#' does not depend on the arm.
 #'
 #' @param lRaw A named list of one snapshot's raw data frames, as in
 #'   `study$raw_data[[1]]`. It needs `Raw_SUBJ`.
@@ -362,56 +365,39 @@ apply_study_results <- function(lRaw, results = TRUE, snapshot_date = NULL) {
         ae$aetoxgr <- grade
       }
 
-      # An event for a rise that was simulated, on the day it is seen.
-      if (isTRUE(results$events$signals)) {
-        liver_u <- .results_unif(key, salt = 31)
-        liver_big <- .results_unif(key, salt = 32)
-        liver_day <- round(30 + 60 * .results_unif(key, salt = 33))
-        kidney_u <- .results_unif(key, salt = 36)
-        long_u <- .results_unif(key, salt = 44)
+      # An event for a rise that was simulated: the participant's first event
+      # that starts once the rise is under way is the one that says so. No
+      # event is added or moved, so how many events a site has is unchanged.
+      if (isTRUE(results$events$signals) && "aest_dt" %in% names(ae)) {
+        started <- as_date(ae$aest_dt)
+        liver_day <- 30 + 60 * .results_unif(key, salt = 33)
         told <- .results_unif(key, salt = 74) < 0.8
         signals <- list(
           list(
-            who = active & liver_u < 0.12 & told, day = liver_day,
-            term = "Alanine aminotransferase increased", serious = liver_big > 0.75
+            who = active & .results_unif(key, salt = 31) < 0.12 & told, day = liver_day - 21,
+            term = "Alanine aminotransferase increased"
           ),
           list(
-            who = active & kidney_u < 0.06 & told, day = rep(45, length(key)),
-            term = "Blood creatinine increased", serious = rep(FALSE, length(key))
+            who = active & .results_unif(key, salt = 36) < 0.06 & told, day = rep(21, length(key)),
+            term = "Blood creatinine increased"
           ),
           list(
-            who = active & long_u < 0.04 & told, day = rep(21, length(key)),
-            term = "Electrocardiogram QT prolonged", serious = rep(FALSE, length(key))
+            who = active & .results_unif(key, salt = 44) < 0.04 & told, day = rep(7, length(key)),
+            term = "Electrocardiogram QT prolonged"
           )
         )
-        added <- lapply(signals, function(signal) {
-          start <- day_one + signal$day
-          at <- which(signal$who & !is.na(start) & start <= asof)
-          if (!length(at)) {
-            return(NULL)
-          }
-          rows <- ae[rep(NA_integer_, length(at)), , drop = FALSE]
-          put <- function(column, value) {
-            if (column %in% names(rows)) rows[[column]] <<- value
-          }
-          put("studyid", if ("studyid" %in% names(ae)) rep(ae$studyid[1], length(at)) else NA)
-          put("subjid", id[at])
-          put("mdrpt_nsv", signal$term)
-          put("mdrsoc_nsv", terms$soc[match(signal$term, terms$term)])
-          put("aeser", ifelse(signal$serious[at], "Y", "N"))
-          put("aetoxgr", ifelse(signal$serious[at], 3L, 2L))
-          put("aeongo", "N")
-          put("aerel", "Y")
-          for (column in intersect(c("aest_dt", "mincreated_dts"), names(rows))) {
-            rows[[column]] <- dated_like(ae[[column]], start[at])
-          }
-          if ("aeen_dt" %in% names(rows)) {
-            rows$aeen_dt <- dated_like(ae$aeen_dt, start[at] + 14)
-          }
-          rows
-        })
-        added <- added[!vapply(added, is.null, logical(1))]
-        if (length(added)) ae <- do.call(rbind, c(list(ae), added))
+        taken <- rep(FALSE, nrow(ae))
+        for (signal in signals) {
+          from <- (day_one + signal$day)[who]
+          fits <- !is.na(who) & signal$who[who] & !is.na(started) & !is.na(from) & started >= from & !taken
+          rows <- which(fits)
+          rows <- rows[!duplicated(ae_subj[rows])]
+          if (!length(rows)) next
+          ae$mdrpt_nsv[rows] <- signal$term
+          ae$mdrsoc_nsv[rows] <- terms$soc[match(signal$term, terms$term)]
+          if ("aerel" %in% names(ae)) ae$aerel[rows] <- "Y"
+          taken[rows] <- TRUE
+        }
       }
       rownames(ae) <- NULL
       lRaw$Raw_AE <- ae
