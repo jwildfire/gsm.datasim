@@ -293,6 +293,18 @@ apply_study_results <- function(lRaw, results = TRUE, snapshot_date = NULL) {
     }
   }
 
+  # A date written as the column it joins is: a date, a date-time, or text.
+  dated_like <- function(like, dates) {
+    if (inherits(like, "Date")) {
+      return(dates)
+    }
+    if (inherits(like, "POSIXct")) {
+      zone <- attr(like, "tzone")
+      return(as.POSIXct(as.character(dates), tz = if (is.null(zone) || !nzchar(zone[1])) "UTC" else zone[1]))
+    }
+    as.character(dates)
+  }
+
   # What has happened by this snapshot: its date, or the last date it holds.
   asof <- if (is.null(snapshot_date)) as.Date(NA) else as_date(snapshot_date)
   if (is.na(asof)) {
@@ -391,10 +403,10 @@ apply_study_results <- function(lRaw, results = TRUE, snapshot_date = NULL) {
           put("aeongo", "N")
           put("aerel", "Y")
           for (column in intersect(c("aest_dt", "mincreated_dts"), names(rows))) {
-            rows[[column]] <- if (inherits(ae[[column]], "Date")) start[at] else as.character(start[at])
+            rows[[column]] <- dated_like(ae[[column]], start[at])
           }
           if ("aeen_dt" %in% names(rows)) {
-            rows$aeen_dt <- if (inherits(ae$aeen_dt, "Date")) start[at] + 14 else as.character(start[at] + 14)
+            rows$aeen_dt <- dated_like(ae$aeen_dt, start[at] + 14)
           }
           rows
         })
@@ -461,7 +473,7 @@ apply_study_results <- function(lRaw, results = TRUE, snapshot_date = NULL) {
       put("compreas", c(reason[left], rep("", length(finished))))
       for (column in intersect(c("studyid", "invid"), names(subj))) put(column, as.character(subj[[column]])[at])
       if ("mincreated_dts" %in% names(rows)) {
-        rows$mincreated_dts <- if (inherits(old$mincreated_dts, "Date")) when else as.character(when)
+        rows$mincreated_dts <- dated_like(old$mincreated_dts, when)
       }
       # A row the simulator wrote for someone who was never enrolled is kept.
       others <- old[!(as.character(old$subjid) %in% id[enrolled]), , drop = FALSE]
