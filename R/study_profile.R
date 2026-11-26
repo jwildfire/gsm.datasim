@@ -28,10 +28,12 @@
 #' | 4 | x 1.15 | as made | as made |
 #'
 #' Lab spread is how far a participant's values spread around the middle of
-#' the normal range: with x 1 about 4.6% of results are outside the range,
-#' with x 0.85 about 1.9%, with x 1.10 about 6.9% and with x 1.15 about 8.2%.
-#' An early study is of fewer, healthier people; a late one of a wider
-#' population.
+#' the normal range. Before a result is rounded, with x 1 about 4.6% of
+#' results are outside the range, with x 0.85 about 1.9%, with x 1.10 about
+#' 6.9% and with x 1.15 about 8.2%. Results are rounded to three figures, so a
+#' test with a narrow range shows fewer: measured on 24,000 sodium results,
+#' 0.9% at Phase 1, 2.5% at Phase 2 and 4.3% at Phase 3. An early study is of
+#' fewer, healthier people; a late one of a wider population.
 #'
 #' @section What a therapeutic area changes:
 #' | Area | Commoner events (class, times as common) | Serious | Severity | Labs |
