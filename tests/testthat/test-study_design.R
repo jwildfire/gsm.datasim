@@ -1,3 +1,8 @@
+# NOTICE. This file is not part of gsm.datasim v2.1.0 (https://github.com/Gilead-Public/gsm.datasim, commit 29fc61c), Copyright Gilead Sciences, Apache License 2.0.
+# Added in November 2026 by Jeremy Wildfire, in the modified copy at
+# https://github.com/jwildfire/gsm.datasim (branch safety-results-2.1),
+# under the same licence. Not reviewed or endorsed by gsm.datasim's maintainers.
+
 test_that("a design is validated: names, days and windows", {
   design <- list(visits = list(
     list(name = "Week 4", day = 29, before = 3, after = 3, vs = TRUE),

@@ -14,6 +14,10 @@ Staged on a branch from v2.1.0 in a copy of the repository, for study.builder to
   - `phase` and `therapeutic_area`: what the study table says of each. The random draw is still made, so nothing the generators make moves.
 - A study's phase and therapeutic area **shape the study results**, a little, by a profile written in one place: `study_profile(phase, therapeutic_area)`. Phase changes how far lab results spread (so how often one is out of range) and, at Phase 1, how many adverse events are serious and how severe they are. Therapeutic area changes which classes of adverse event are commoner, and for Oncology and Virology how many participants have raised liver tests or a rise in liver or kidney tests, and for Oncology how many events are serious and severe. Phase 2 with no area is neutral. `create_longitudinal_study()` sets `results$profile` from its `phase` and `therapeutic_area`, and takes an `indication` for the study table; the area's profile names one when none is given. `results$profile = FALSE` changes nothing. The numbers are guesses at believable sizes, not fitted to data; `?study_profile` lists every one.
 
+## Notices
+
+- This copy says what it is: `DESCRIPTION` and `README.md` call it a modified copy of gsm.datasim 2.1.0 and name who changed it, and each changed or added file carries a notice at its top (Apache License 2.0, section 4(b)). No code changed with this.
+
 ## Known limits
 
 - A lab's toxicity grade is not worked out from the result beside it, and adverse events do not follow the arm.

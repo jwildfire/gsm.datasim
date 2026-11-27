@@ -1,3 +1,8 @@
+# NOTICE. This file is not part of gsm.datasim v2.1.0 (https://github.com/Gilead-Public/gsm.datasim, commit 29fc61c), Copyright Gilead Sciences, Apache License 2.0.
+# Added in November 2026 by Jeremy Wildfire, in the modified copy at
+# https://github.com/jwildfire/gsm.datasim (branch safety-results-2.1),
+# under the same licence. Not reviewed or endorsed by gsm.datasim's maintainers.
+
 # The options of create_longitudinal_study() that let a caller ask the
 # simulator for what it would otherwise have to change afterwards: vital signs
 # by a spec handed in, gsm's column names, a site id prefix, and the phase and

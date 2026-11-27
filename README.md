@@ -1,5 +1,15 @@
 # gsm.datasim
 
+> **This is a modified copy, not Gilead's gsm.datasim.** It is
+> [gsm.datasim v2.1.0](https://github.com/Gilead-Public/gsm.datasim/releases/tag/v2.1.0)
+> (commit 29fc61c, Copyright Gilead Sciences, Apache License 2.0) with a study design,
+> study options, a study profile and study results added by Jeremy Wildfire in
+> November 2026, for [study.builder](https://github.com/jwildfire/study.builder) to run
+> in the browser. The additions have not been raised with, reviewed by or endorsed by
+> gsm.datasim's maintainers. Every changed or added file says so at its top, and
+> `NEWS.md` lists what was added. For the package itself, go to
+> [Gilead-Public/gsm.datasim](https://github.com/Gilead-Public/gsm.datasim).
+
 <!-- badges: start -->
 
 <div class="pkgdown-release">
